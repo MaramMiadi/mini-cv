@@ -3,83 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CV - Maram Miadi</title>
+
+    <title>Maram Miadi - DevSecOps Portfolio</title>
+
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<header>
-    <h1>Maram Miadi</h1>
-    <p>Étudiante en Master DevOps & Cloud Computing</p>
-    <button onclick="showContact()">Me contacter</button>
-</header>
+    <!-- Navigation -->
+    <header>
+        <nav class="navbar">
+            <h1>Maram Miadi</h1>
 
-<main>
+            <ul>
+                <li><a href="#about">About</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#experience">Experience</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
 
-    <section>
-        <h2>À propos</h2>
+    <!-- Hero -->
+    <section class="hero">
+        <div>
+            <h2>DevSecOps & Cloud Computing</h2>
+
+            <p>
+                Master student passionate about cloud computing,
+                DevOps, automation and infrastructure security.
+            </p>
+
+            <a href="#projects" class="button">Voir mes projets</a>
+        </div>
+    </section>
+
+    <!-- About -->
+    <section id="about" class="section">
+        <h2>About</h2>
+
         <p>
-            Étudiante en Master DevOps et Cloud Computing,
-            intéressée par le cloud, la conteneurisation,
-            l'automatisation et les technologies DevOps.
+            Je suis Maram Miadi, étudiante en Master DevOps et Cloud Computing.
+            Mon parcours en réseaux et systèmes informatiques m'a permis
+            d'acquérir des connaissances en infrastructure, réseaux,
+            virtualisation et administration système.
+        </p>
+
+        <p>
+            Je m'intéresse particulièrement à l'automatisation,
+            la conteneurisation, le Cloud, Kubernetes et les pratiques
+            DevSecOps.
         </p>
     </section>
 
-    <section>
-        <h2>Formation</h2>
+    <!-- Skills -->
+    <section id="skills" class="section">
+        <h2>DevSecOps Skills</h2>
 
-        <div class="card">
+        <div class="skills-container">
+
+            <div class="skill-card">
+                <h3>Git</h3>
+                <p>Version control</p>
+            </div>
+
+            <div class="skill-card">
+                <h3>Docker</h3>
+                <p>Containerisation</p>
+            </div>
+
+            <div class="skill-card">
+                <h3>Jenkins</h3>
+                <p>CI/CD</p>
+            </div>
+
+            <div class="skill-card">
+                <h3>Kubernetes</h3>
+                <p>Container orchestration</p>
+            </div>
+
+            <div class="skill-card">
+                <h3>Ansible</h3>
+                <p>Automation</p>
+            </div>
+
+            <div class="skill-card">
+                <h3>Terraform</h3>
+                <p>Infrastructure as Code</p>
+            </div>
+
+            <div class="skill-card">
+                <h3>Argo CD</h3>
+                <p>GitOps</p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Projects -->
+    <section id="projects" class="section">
+
+        <h2>Projects</h2>
+
+        <!-- JavaScript will generate projects here -->
+        <div id="projects-container" class="projects-container"></div>
+
+    </section>
+
+    <!-- Experience -->
+    <section id="experience" class="section">
+
+        <h2>Experience</h2>
+
+        <div class="experience-card">
+
             <h3>Master DevOps & Cloud Computing</h3>
-            <p>2025 - 2026</p>
-        </div>
 
-        <div class="card">
-            <h3>Licence Réseaux et Services Informatiques</h3>
-            <p>ISET Tozeur — 2024</p>
-        </div>
-    </section>
-
-    <section>
-        <h2>Compétences</h2>
-
-        <div class="skills">
-            <span>Docker</span>
-            <span>Kubernetes</span>
-            <span>Linux</span>
-            <span>Git</span>
-            <span>GitHub</span>
-            <span>Jenkins</span>
-            <span>Cloud</span>
-            <span>Networking</span>
-        </div>
-    </section>
-
-    <section>
-        <h2>Projets</h2>
-
-        <div class="card">
-            <h3>Docker-based NFV</h3>
             <p>
-                Projet de fin d'études basé sur Docker,
-                GNS3, pfSense et des services réseau.
+                Formation orientée vers le Cloud Computing,
+                la conteneurisation, Kubernetes, CI/CD,
+                l'automatisation et DevSecOps.
             </p>
+
         </div>
+
+        <div class="experience-card">
+
+            <h3>Licence Réseaux et Services Informatiques</h3>
+
+            <p>
+                Formation en réseaux, systèmes informatiques,
+                virtualisation et administration des infrastructures.
+            </p>
+
+        </div>
+
     </section>
 
-    <section id="contact">
+    <!-- Contact -->
+    <section id="contact" class="section">
+
         <h2>Contact</h2>
-        <p>Email : votre-email@example.com</p>
-        <p>GitHub : github.com/MaramMiadi</p>
+
+        <p>
+            Vous pouvez me contacter pour échanger sur les technologies
+            DevOps, Cloud et DevSecOps.
+        </p>
+
+        <p>
+            <strong>Email :</strong>
+            maram.miadi@example.com
+        </p>
+
     </section>
 
-</main>
+    <!-- Footer -->
+    <footer>
 
-<footer>
-    <p>© 2026 Maram Miadi</p>
-</footer>
+        <p>
+            © 2026 Maram Miadi - DevSecOps Portfolio
+        </p>
 
-<script src="script.js"></script>
+    </footer>
+
+    <script src="script.js"></script>
 
 </body>
 </html>

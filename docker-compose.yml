@@ -1,0 +1,9 @@
+services:
+  portfolio:
+    build:
+      context: .
+    image: cv-docker
+    container_name: cv-portfolio
+    ports:
+      - "8081:80"
+    restart: unless-stopped
