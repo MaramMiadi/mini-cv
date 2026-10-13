@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        nodejs 'NodeJS-22'
-    }
-
     environment {
         REPO_URL    = 'https://github.com/MaramMiadi/mini-cv.git'
         BRANCH      = 'main'
@@ -13,7 +9,6 @@ pipeline {
     }
 
     stages {
-        // Question 22 : récupération du dépôt GitHub
         stage('Checkout') {
             steps {
                 git branch: "${BRANCH}", url: "${REPO_URL}"
@@ -21,7 +16,6 @@ pipeline {
             }
         }
 
-        // Question 23 : installation des dépendances
         stage('Install dependencies') {
             steps {
                 dir("${PROJECT_DIR}") {
@@ -31,7 +25,6 @@ pipeline {
             }
         }
 
-        // Question 24 : build Next.js
         stage('Build') {
             steps {
                 dir("${PROJECT_DIR}") {
