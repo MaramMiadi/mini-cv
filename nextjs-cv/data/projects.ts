@@ -1,5 +1,15 @@
-// Données des projets. Le champ `slug` sert d'URL : /projects/<slug>
-export const projects = [
+export type Project = {
+  slug: string;
+  name: string;
+  summary: string;
+  description: string;
+  stack: string[];
+  highlights?: string[];
+  repo?: string;
+  featured?: boolean;
+};
+
+export const projects: Project[] = [
   {
     slug: "mini-cv",
     name: "Mini CV",
@@ -47,6 +57,6 @@ export const projects = [
   },
 ];
 
-export function getProjectBySlug(slug) {
+export function getProjectBySlug(slug: string) {
   return projects.find((p) => p.slug === slug);
 }

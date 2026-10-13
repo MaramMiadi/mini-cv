@@ -1,6 +1,7 @@
 import Link from "next/link";
+import type { Project } from "@/data/projects";
 
-export default function ProjectCard({ project }) {
+export default function ProjectCard({ project }: { project: Project }) {
   return (
     <article className="project-card">
       <h3>

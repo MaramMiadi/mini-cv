@@ -3,17 +3,21 @@ import { notFound } from "next/navigation";
 import { projects, getProjectBySlug } from "@/data/projects";
 
 // Pré-génère une page statique par projet au moment du build
+type Props = { params: Promise<{ slug: string }> };
+
 export function generateStaticParams() {
   return projects.map((p) => ({ slug: p.slug }));
 }
 
-export function generateMetadata({ params }) {
-  const project = getProjectBySlug(params.slug);
+export async function generateMetadata({ params }: Props) {
+  const { slug } = await params;
+  const project = getProjectBySlug(slug);
   return { title: project ? `${project.name} | Projets` : "Projet introuvable" };
 }
 
-export default function ProjectPage({ params }) {
-  const project = getProjectBySlug(params.slug);
+export default async function ProjectPage({ params }: Props) {
+  const { slug } = await params;
+  const project = getProjectBySlug(slug);
   if (!project) notFound();
 
   return (
