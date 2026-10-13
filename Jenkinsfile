@@ -31,7 +31,8 @@ pipeline {
         stage('Build') {
             steps {
                 dir("${PROJECT_DIR}") {
-                    sh 'npm run build'
+                    sh 'rm -rf .next'
+                    sh 'NODE_OPTIONS=--max-old-space-size=1536 npx next build --webpack'
                 }
             }
         }
