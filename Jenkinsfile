@@ -6,8 +6,12 @@ pipeline {
         BRANCH      = 'main'
         PROJECT_DIR = 'nextjs-cv'
         NEXT_TELEMETRY_DISABLED = '1'
+        NODE_OPTIONS = '--dns-result-order=ipv4first'
+        NPM_CONFIG_FETCH_RETRIES = '5'
+        NPM_CONFIG_FETCH_RETRY_MINTIMEOUT = '20000'
+        NPM_CONFIG_FETCH_TIMEOUT = '300000'
     }
-
+    
     stages {
         stage('Checkout') {
             steps {
@@ -20,7 +24,9 @@ pipeline {
             steps {
                 dir("${PROJECT_DIR}") {
                     sh 'node --version && npm --version'
-                    sh 'if [ -f package-lock.json ]; then npm ci; else npm install; fi'
+                    retry(3) {
+                        sh 'if [ -f package-lock.json ]; then npm ci; else npm install; fi'
+                    }
                 }
             }
         }
