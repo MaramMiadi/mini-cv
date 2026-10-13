@@ -11,7 +11,7 @@ pipeline {
         NPM_CONFIG_FETCH_RETRY_MINTIMEOUT = '20000'
         NPM_CONFIG_FETCH_TIMEOUT = '300000'
     }
-    
+
     stages {
         stage('Checkout') {
             steps {
@@ -23,10 +23,7 @@ pipeline {
         stage('Install dependencies') {
             steps {
                 dir("${PROJECT_DIR}") {
-                    sh 'node --version && npm --version'
-                    retry(3) {
-                        sh 'if [ -f package-lock.json ]; then npm ci; else npm install; fi'
-                    }
+                    sh 'npm install'
                 }
             }
         }
