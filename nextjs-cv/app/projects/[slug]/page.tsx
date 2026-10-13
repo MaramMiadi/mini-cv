@@ -36,17 +36,23 @@ export default async function ProjectPage({ params }: Props) {
           ))}
         </ul>
 
-        <h2>Points clés</h2>
-        <ul className="highlights">
-          {project.highlights.map((h) => (
-            <li key={h}>{h}</li>
-          ))}
-        </ul>
+        {project.highlights && project.highlights.length > 0 && (
+        <>
+            <h2>Points clés</h2>
+            <ul className="highlights">
+            {project.highlights.map((h) => (
+                <li key={h}>{h}</li>
+            ))}
+            </ul>
+        </>
+        )}
 
         <p>
-          <a className="button" href={project.repo} target="_blank" rel="noopener noreferrer">
-            Voir le code sur GitHub
-          </a>
+{project.repo && (
+  <a href={project.repo} target="_blank" rel="noopener noreferrer">
+    Voir le code sur GitHub
+  </a>
+)}
         </p>
       </div>
     </section>

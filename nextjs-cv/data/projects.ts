@@ -4,7 +4,7 @@ export type Project = {
   summary: string;
   description: string;
   stack: string[];
-  highlights?: string[];
+  highlights: string[];   // plus de "?"
   repo?: string;
   featured?: boolean;
 };
