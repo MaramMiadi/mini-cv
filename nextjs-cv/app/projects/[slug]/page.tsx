@@ -1,24 +1,51 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { projects, getProjectBySlug } from "@/data/projects";
+import { Suspense } from "react";
 
-// Pré-génère une page statique par projet au moment du build
-type Props = { params: Promise<{ slug: string }> };
+type Project = {
+  slug: string;
+  name: string;
+  summary: string;
+  description: string;
+  stack: string[];
+  highlights: string[];
+  repo?: string;
+  featured?: boolean;
+};
 
-export function generateStaticParams() {
-  return projects.map((p) => ({ slug: p.slug }));
+type Props = {
+  params: Promise<{ slug: string }>;
+};
+
+export const metadata = {
+  title: "Détails du projet | DevSecOps Portfolio",
+};
+
+async function getProjects(): Promise<Project[]> {
+  const apiUrl = process.env.API_URL || "http://127.0.0.1:4000";
+
+  const response = await fetch(`${apiUrl}/api/projects`, {
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      `Impossible de récupérer les projets : ${response.status}`
+    );
+  }
+
+  return response.json();
 }
 
-export async function generateMetadata({ params }: Props) {
+async function ProjectDetails({ params }: Props) {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
-  return { title: project ? `${project.name} | Projets` : "Projet introuvable" };
-}
 
-export default async function ProjectPage({ params }: Props) {
-  const { slug } = await params;
-  const project = getProjectBySlug(slug);
-  if (!project) notFound();
+  const projects = await getProjects();
+  const project = projects.find((p) => p.slug === slug);
+
+  if (!project) {
+    notFound();
+  }
 
   return (
     <section className="section">
@@ -26,35 +53,52 @@ export default async function ProjectPage({ params }: Props) {
         <p>
           <Link href="/projects">← Retour aux projets</Link>
         </p>
+
         <h1>{project.name}</h1>
         <p className="lead">{project.description}</p>
 
         <h2>Technologies</h2>
         <ul className="tags">
-          {project.stack.map((s) => (
-            <li key={s}>{s}</li>
+          {project.stack.map((technology) => (
+            <li key={technology}>{technology}</li>
           ))}
         </ul>
 
-        {project.highlights && project.highlights.length > 0 && (
-        <>
+        {project.highlights.length > 0 && (
+          <>
             <h2>Points clés</h2>
             <ul className="highlights">
-            {project.highlights.map((h) => (
-                <li key={h}>{h}</li>
-            ))}
+              {project.highlights.map((highlight) => (
+                <li key={highlight}>{highlight}</li>
+              ))}
             </ul>
-        </>
+          </>
         )}
 
-        <p>
-{project.repo && (
-  <a href={project.repo} target="_blank" rel="noopener noreferrer">
-    Voir le code sur GitHub
-  </a>
-)}
-        </p>
+        {project.repo && (
+          <p>
+            <a
+              href={project.repo}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Voir le code sur GitHub
+            </a>
+          </p>
+        )}
       </div>
     </section>
+  );
+}
+
+export default function ProjectPage({ params }: Props) {
+  return (
+    <Suspense
+      fallback={
+        <p className="container">Chargement du projet...</p>
+      }
+    >
+      <ProjectDetails params={params} />
+    </Suspense>
   );
 }

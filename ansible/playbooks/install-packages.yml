@@ -1,0 +1,13 @@
+---
+- name: Installer les outils nécessaires au portfolio
+  hosts: portfolio_servers
+  become: true
+
+  tasks:
+    - name: Installer curl et git
+      ansible.builtin.apt:
+        name:
+          - curl
+          - git
+        state: present
+        update_cache: true
