@@ -1,0 +1,3 @@
+NAME               IMAGE                                                                     COMMAND                  SERVICE    CREATED         STATUS                   PORTS
+mini-cv-api        sha256:ec20367313598020af7f024b0a4cfb77b6fc3da72ef8eebb6ab9d7843c984320   "docker-entrypoint.s…"   api        6 minutes ago   Up 6 minutes (healthy)   4000/tcp
+mini-cv-frontend   sha256:109c35ca61776dafa562f048b6a3201bdb1b580bbe874d5e895ce5c013a8bffc   "docker-entrypoint.s…"   frontend   2 minutes ago   Up 2 minutes             0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp

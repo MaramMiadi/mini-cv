@@ -1,0 +1,41 @@
+---
+- name: Deploy the Next.js portfolio and Express API
+  hosts: portfolio_servers
+  gather_facts: true
+
+  vars:
+    project_dir: "{{ ansible_env.HOME }}/mini-cv/nextjs-cv"
+
+  tasks:
+    - name: Check Docker version
+      ansible.builtin.command: docker --version
+      changed_when: false
+
+    - name: Check Docker Compose
+      ansible.builtin.command: docker compose version
+      changed_when: false
+
+    - name: Validate Docker Compose configuration
+      ansible.builtin.command: docker compose config -q
+      args:
+        chdir: "{{ project_dir }}"
+      changed_when: false
+
+    - name: Build and start the portfolio services
+      ansible.builtin.command: docker compose up -d --build
+      args:
+        chdir: "{{ project_dir }}"
+
+    - name: Wait for the frontend to respond
+      ansible.builtin.uri:
+        url: http://127.0.0.1:3000
+        method: GET
+        status_code: 200
+      register: frontend_health
+      retries: 10
+      delay: 5
+      until: frontend_health.status == 200
+
+    - name: Display deployment result
+      ansible.builtin.debug:
+        msg: "Portfolio deployed successfully. HTTP status: {{ frontend_health.status }}"
