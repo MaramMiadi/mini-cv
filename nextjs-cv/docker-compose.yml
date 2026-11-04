@@ -1,4 +1,23 @@
 services:
+  db:
+    image: postgres:16-alpine
+    container_name: mini-cv-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: portfolio
+      POSTGRES_USER: portfolio_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-portfolio_dev_password}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - portfolio-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U portfolio_user -d portfolio"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
   api:
     build:
       context: ./api
@@ -9,10 +28,14 @@ services:
     environment:
       NODE_ENV: production
       PORT: "4000"
+      DATABASE_URL: postgresql://portfolio_user:portfolio_dev_password@db:5432/portfolio?schema=public
     expose:
       - "4000"
     networks:
       - portfolio-net
+    depends_on:
+      db:
+        condition: service_healthy
     healthcheck:
       test:
         - CMD
@@ -47,3 +70,6 @@ services:
 networks:
   portfolio-net:
     driver: bridge
+
+volumes:
+  postgres-data:

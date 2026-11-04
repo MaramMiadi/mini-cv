@@ -20,15 +20,39 @@ pipeline {
             }
         }
 
-        stage('Install dependencies') {
+        stage('Install frontend dependencies') {
             steps {
                 dir("${PROJECT_DIR}") {
-                    sh 'npm install'
+                    sh 'npm ci'
                 }
             }
         }
 
-        stage('Build') {
+        stage('Frontend tests') {
+            steps {
+                dir("${PROJECT_DIR}") {
+                    sh 'npm test -- --run'
+                }
+            }
+        }
+
+        stage('Install API dependencies') {
+            steps {
+                dir("${PROJECT_DIR}/api") {
+                    sh 'npm ci'
+                }
+            }
+        }
+
+        stage('API tests') {
+            steps {
+                dir("${PROJECT_DIR}/api") {
+                    sh 'npm test'
+                }
+            }
+        }
+
+        stage('Build frontend') {
             steps {
                 dir("${PROJECT_DIR}") {
                     sh 'npm run build'
@@ -38,7 +62,11 @@ pipeline {
     }
 
     post {
-        success { echo 'Pipeline terminé avec succès.' }
-        failure { echo 'Le pipeline a échoué : consultez les logs.' }
+        success {
+            echo 'Pipeline terminé avec succès : tests frontend, tests API et build réussis.'
+        }
+        failure {
+            echo 'Le pipeline a échoué : consultez les logs.'
+        }
     }
 }

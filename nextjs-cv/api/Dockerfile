@@ -10,7 +10,11 @@ COPY package*.json ./
 RUN npm ci --omit=dev \
     && npm cache clean --force
 
-COPY . .
+COPY prisma ./prisma
+
+RUN npx prisma generate
+
+COPY src ./src
 
 RUN addgroup --system --gid 1001 nodejs \
     && adduser --system --uid 1001 nodejs \
@@ -20,4 +24,4 @@ USER nodejs
 
 EXPOSE 4000
 
-CMD ["npm", "start"]
+CMD ["sh", "-c", "npx prisma migrate deploy && npm start"]
