@@ -90,10 +90,20 @@ pipeline {
 	
 stage('Build Docker images') {
     steps {
-        sh '''
-            docker build -t devsecops-portfolio:latest .
-            docker build -t devsecops-api:latest nextjs-cv/api
-        '''
+        script {
+            def gitSha = sh(
+                script: 'git rev-parse --short HEAD',
+                returnStdout: true
+            ).trim()
+
+            sh """
+                docker build -t devsecops-portfolio:latest .
+                docker build -t devsecops-api:latest nextjs-cv/api
+
+                docker tag devsecops-portfolio:latest devsecops-portfolio:${gitSha}
+                docker tag devsecops-api:latest devsecops-api:${gitSha}
+            """
+        }
     }
 }
     }
