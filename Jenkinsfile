@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         REPO_URL    = 'https://github.com/MaramMiadi/mini-cv.git'
-        BRANCH      = 'main'
+        BRANCH      = 'act4'
         PROJECT_DIR = 'nextjs-cv'
         NEXT_TELEMETRY_DISABLED = '1'
         NODE_OPTIONS = '--dns-result-order=ipv4first'
