@@ -87,6 +87,15 @@ pipeline {
                 }
             }
         }
+	
+stage('Build Docker images') {
+    steps {
+        sh '''
+            docker build -t devsecops-portfolio:latest .
+            docker build -t devsecops-api:latest nextjs-cv/api
+        '''
+    }
+}
     }
 
     post {
