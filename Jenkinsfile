@@ -16,7 +16,6 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: "${BRANCH}", url: "${REPO_URL}"
-                sh 'ls -la'
             }
         }
 
@@ -44,10 +43,39 @@ pipeline {
             }
         }
 
+        stage('Start test PostgreSQL') {
+            steps {
+                sh '''
+                    docker rm -f jenkins-test-postgres >/dev/null 2>&1 || true
+                    docker run -d --name jenkins-test-postgres \
+                      -e POSTGRES_USER=test_user \
+                      -e POSTGRES_PASSWORD=test_password \
+                      -e POSTGRES_DB=test_db \
+                      -p 127.0.0.1:5433:5432 \
+                      postgres:16-alpine
+                '''
+                sh '''
+                    for i in $(seq 1 30); do
+                      if docker exec jenkins-test-postgres pg_isready -U test_user -d test_db; then
+                        exit 0
+                      fi
+                      sleep 2
+                    done
+                    echo "PostgreSQL test database did not become ready"
+                    exit 1
+                '''
+            }
+        }
+
         stage('API tests') {
             steps {
                 dir("${PROJECT_DIR}/api") {
-                    sh 'npm test'
+                    withEnv([
+                        'DATABASE_URL=postgresql://test_user:test_password@127.0.0.1:5433/test_db'
+                    ]) {
+                        sh 'npx prisma migrate deploy'
+                        sh 'npm test'
+                    }
                 }
             }
         }
@@ -62,6 +90,9 @@ pipeline {
     }
 
     post {
+        always {
+            sh 'docker rm -f jenkins-test-postgres >/dev/null 2>&1 || true'
+        }
         success {
             echo 'Pipeline terminé avec succès : tests frontend, tests API et build réussis.'
         }
