@@ -19,6 +19,17 @@ pipeline {
             }
         }
 
+stage('Scan secrets with Gitleaks') {
+    steps {
+        sh '''
+            docker run --rm \
+              -v "$WORKSPACE:/repo" \
+              zricethezav/gitleaks:latest \
+              dir --redact --exit-code 1 /repo
+        '''
+    }
+}
+
         stage('Install frontend dependencies') {
             steps {
                 dir("${PROJECT_DIR}") {
