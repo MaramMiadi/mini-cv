@@ -151,6 +151,26 @@ stage('Build Docker images') {
         }
     }
 }
+
+        stage('Scan Docker images with Trivy') {
+            steps {
+                sh '''
+                    docker run --rm \
+                      -v /var/run/docker.sock:/var/run/docker.sock \
+                      aquasec/trivy:latest image \
+                      --exit-code 1 \
+                      --severity CRITICAL \
+                      devsecops-portfolio:latest
+
+                    docker run --rm \
+                      -v /var/run/docker.sock:/var/run/docker.sock \
+                      aquasec/trivy:latest image \
+                      --exit-code 1 \
+                      --severity CRITICAL \
+                      devsecops-api:latest
+                '''
+            }
+        }
     }
 
     post {
