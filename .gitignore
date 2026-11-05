@@ -1,0 +1,8 @@
+
+# Local Vagrant state and generated Next.js build files
+/.vagrant/
+/nextjs-cv/.next/
+# Security scan reports and local cache
+reports/
+gitleaks-report.json
+.dependency-check-data/
