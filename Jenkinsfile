@@ -24,8 +24,10 @@ stage('Scan secrets with Gitleaks') {
         sh '''
             docker run --rm \
               -v "$WORKSPACE:/repo" \
+              -v "$WORKSPACE/.git:/repo/.git" \
               zricethezav/gitleaks:latest \
-              dir --redact --exit-code 1 /repo
+              git --redact --exit-code 1 \
+              --repo-path=/repo
         '''
     }
 }
