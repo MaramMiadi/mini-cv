@@ -32,6 +32,22 @@ stage('Scan secrets with Gitleaks') {
     }
 }
 
+        stage('SAST with Semgrep') {
+            steps {
+                sh '''
+                    docker run --rm \
+                      -v "$WORKSPACE:/src" \
+                      semgrep/semgrep \
+                      semgrep scan \
+                      --config p/owasp-top-ten \
+                      --config p/javascript \
+                      --config p/typescript \
+                      --error \
+                      /src/nextjs-cv
+                '''
+            }
+        }
+
         stage('Install frontend dependencies') {
             steps {
                 dir("${PROJECT_DIR}") {
@@ -55,6 +71,22 @@ stage('Scan secrets with Gitleaks') {
                 }
             }
         }
+        stage('Frontend dependency audit') {
+            steps {
+                dir("${PROJECT_DIR}") {
+                    sh 'npm audit --audit-level=high'
+                }
+            }
+        }
+
+        stage('Backend dependency audit') {
+            steps {
+                dir("${PROJECT_DIR}/api") {
+                    sh 'npm audit --audit-level=high'
+                }
+            }
+        }
+
 
         stage('Start test PostgreSQL') {
             steps {
