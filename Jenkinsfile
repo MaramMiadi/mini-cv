@@ -180,12 +180,10 @@ stage('Build Docker images') {
             grep -E 'CRITICAL|HIGH|ERROR|Total:|failed' trivy-report.txt | tail -30 || true
 
             echo "===== Vérification du seuil de sécurité ====="
-            docker run --rm \
-              -v /var/run/docker.sock:/var/run/docker.sock \
-              aquasec/trivy:latest \
-              --timeout 10m0s \
-              image --severity HIGH,CRITICAL \
-              devsecops-portfolio:latest
+            if grep -q 'CRITICAL' trivy-report.txt; then
+              echo "Vulnérabilités critiques détectées, échec du pipeline."
+              exit 1
+            fi
         '''
     }
 }
