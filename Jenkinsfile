@@ -157,18 +157,20 @@ stage('Build Docker images') {
         sh '''
             set +e
 
-            trivy image \
-              --severity HIGH,CRITICAL \
-              --format table \
+            docker run --rm \
+              -v /var/run/docker.sock:/var/run/docker.sock \
+              aquasec/trivy:latest \
+              image --severity HIGH,CRITICAL --format table \
               devsecops-portfolio:latest > trivy-report.txt 2>&1
 
             echo "===== Résumé Trivy ====="
             grep -E 'CRITICAL|HIGH|ERROR|Total:|failed' trivy-report.txt | tail -30 || true
 
             echo "===== Vérification du seuil de sécurité ====="
-            trivy image \
-              --severity HIGH,CRITICAL \
-              --exit-code 1 \
+            docker run --rm \
+              -v /var/run/docker.sock:/var/run/docker.sock \
+              aquasec/trivy:latest \
+              image --severity HIGH,CRITICAL --exit-code 1 \
               devsecops-portfolio:latest
         '''
     }
