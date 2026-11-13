@@ -143,6 +143,10 @@ stage('Scan secrets with Gitleaks') {
 	
 stage('Build Docker images') {
     steps {
+        sh '''
+            docker system prune -f
+            docker builder prune -f
+        '''
         script {
             def gitSha = sh(
                 script: 'git rev-parse --short HEAD',
