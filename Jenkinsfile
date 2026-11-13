@@ -172,6 +172,7 @@ stage('Build Docker images') {
             docker run --rm \
               -v /var/run/docker.sock:/var/run/docker.sock \
               aquasec/trivy:latest \
+              --timeout 10m0s \
               image --severity HIGH,CRITICAL --format table \
               devsecops-portfolio:latest > trivy-report.txt 2>&1
 
@@ -182,6 +183,7 @@ stage('Build Docker images') {
             docker run --rm \
               -v /var/run/docker.sock:/var/run/docker.sock \
               aquasec/trivy:latest \
+              --timeout 10m0s \
               image --severity HIGH,CRITICAL \
               devsecops-portfolio:latest
         '''
