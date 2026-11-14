@@ -1,0 +1,14 @@
+
+.git
+**/.git
+.vagrant
+**/node_modules
+**/.next
+nextjs-cv
+ansible
+evidence
+reports
+gitleaks-report.json
+Jenkinsfile
+Vagrantfile
+docker-compose.yml
