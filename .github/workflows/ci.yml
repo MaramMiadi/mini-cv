@@ -1,0 +1,128 @@
+
+name: mini-cv CI
+
+on:
+  push:
+    branches:
+      - act5
+      - main
+  pull_request:
+    branches:
+      - act5
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mini-cv-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  frontend-tests:
+    name: Frontend tests and build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: nextjs-cv
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: nextjs-cv/package-lock.json
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Run frontend tests
+        run: npm test
+
+      - name: Build frontend
+        run: npm run build
+
+  api-tests:
+    name: API tests with PostgreSQL
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: nextjs-cv/api
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: portfolio
+          POSTGRES_USER: portfolio_user
+          POSTGRES_PASSWORD: portfolio_test_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U portfolio_user -d portfolio"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://portfolio_user:portfolio_test_password@localhost:5432/portfolio?schema=public
+      NODE_ENV: test
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: nextjs-cv/api/package-lock.json
+
+      - name: Install API dependencies
+        run: npm ci
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      - name: Apply database migrations
+        run: npx prisma migrate deploy
+
+      - name: Run API tests
+        run: npm test
+
+  docker-build:
+    name: Build frontend and API Docker images
+    runs-on: ubuntu-latest
+    needs:
+      - frontend-tests
+      - api-tests
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build frontend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./nextjs-cv
+          file: ./nextjs-cv/Dockerfile
+          push: false
+          tags: mini-cv-frontend:ci
+
+      - name: Build API image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./nextjs-cv/api
+          file: ./nextjs-cv/api/Dockerfile
+          push: false
+          tags: mini-cv-api:ci
