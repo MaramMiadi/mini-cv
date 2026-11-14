@@ -3,13 +3,9 @@ name: mini-cv CI
 
 on:
   push:
-    branches:
-      - act5
-      - main
+    branches: [act5, main]
   pull_request:
-    branches:
-      - act5
-      - main
+    branches: [act5, main]
   workflow_dispatch:
 
 permissions:
@@ -20,14 +16,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-
   secrets-scan:
     name: Secret scan with Gitleaks
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout source
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           fetch-depth: 0
 
@@ -45,10 +39,9 @@ jobs:
   sast:
     name: SAST with Semgrep
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout source
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
 
       - name: Scan source code with Semgrep
         run: |
@@ -61,17 +54,16 @@ jobs:
   frontend-tests:
     name: Frontend tests and dependency audit
     runs-on: ubuntu-latest
-
     defaults:
       run:
         working-directory: nextjs-cv
 
     steps:
-      - name: Checkout source
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: 22
           cache: npm
@@ -92,7 +84,6 @@ jobs:
   api-tests:
     name: API tests and dependency audit
     runs-on: ubuntu-latest
-
     defaults:
       run:
         working-directory: nextjs-cv/api
@@ -117,11 +108,11 @@ jobs:
       NODE_ENV: test
 
     steps:
-      - name: Checkout source
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: 22
           cache: npm
@@ -133,7 +124,7 @@ jobs:
       - name: Audit API dependencies
         run: npm audit --audit-level=high
 
-      - name: Generate Prisma Client
+      - name: Generate Prisma client
         run: npx prisma generate
 
       - name: Apply database migrations
@@ -145,7 +136,6 @@ jobs:
   docker-build:
     name: Build frontend and API Docker images
     runs-on: ubuntu-latest
-
     needs:
       - secrets-scan
       - sast
@@ -153,14 +143,14 @@ jobs:
       - api-tests
 
     steps:
-      - name: Checkout source
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435
 
       - name: Build frontend image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@ca877d9245402d1537745e0e356eab47c3520991
         with:
           context: ./nextjs-cv
           file: ./nextjs-cv/Dockerfile
@@ -168,9 +158,10 @@ jobs:
           tags: mini-cv-frontend:ci
 
       - name: Build API image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@ca877d9245402d1537745e0e356eab47c3520991
         with:
           context: ./nextjs-cv/api
           file: ./nextjs-cv/api/Dockerfile
           push: false
           tags: mini-cv-api:ci
+
