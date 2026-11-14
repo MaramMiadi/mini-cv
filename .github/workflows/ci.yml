@@ -21,9 +21,47 @@ concurrency:
 
 jobs:
 
-  frontend-tests:
-    name: Frontend tests and build
+  secrets-scan:
+    name: Secret scan with Gitleaks
     runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Scan repository with Gitleaks
+        run: |
+          docker run --rm \
+            -v "$PWD:/repo" \
+            -w /repo \
+            ghcr.io/gitleaks/gitleaks:latest \
+            detect \
+            --source /repo \
+            --gitleaks-ignore-path .gitleaksignore \
+            --exit-code 1
+
+  sast:
+    name: SAST with Semgrep
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Scan source code with Semgrep
+        run: |
+          docker run --rm \
+            -v "$PWD:/src" \
+            -w /src \
+            semgrep/semgrep:latest \
+            semgrep scan --config auto --error .
+
+  frontend-tests:
+    name: Frontend tests and dependency audit
+    runs-on: ubuntu-latest
+
     defaults:
       run:
         working-directory: nextjs-cv
@@ -42,6 +80,9 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci
 
+      - name: Audit frontend dependencies
+        run: npm audit --audit-level=high
+
       - name: Run frontend tests
         run: npm test
 
@@ -49,8 +90,9 @@ jobs:
         run: npm run build
 
   api-tests:
-    name: API tests with PostgreSQL
+    name: API tests and dependency audit
     runs-on: ubuntu-latest
+
     defaults:
       run:
         working-directory: nextjs-cv/api
@@ -88,6 +130,9 @@ jobs:
       - name: Install API dependencies
         run: npm ci
 
+      - name: Audit API dependencies
+        run: npm audit --audit-level=high
+
       - name: Generate Prisma Client
         run: npx prisma generate
 
@@ -100,7 +145,10 @@ jobs:
   docker-build:
     name: Build frontend and API Docker images
     runs-on: ubuntu-latest
+
     needs:
+      - secrets-scan
+      - sast
       - frontend-tests
       - api-tests
 
