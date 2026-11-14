@@ -133,8 +133,9 @@ jobs:
       - name: Run API tests
         run: npm test
 
+  
   docker-build:
-    name: Build frontend and API Docker images
+    name: Build and scan Docker images
     runs-on: ubuntu-latest
     needs:
       - secrets-scan
@@ -155,6 +156,7 @@ jobs:
           context: ./nextjs-cv
           file: ./nextjs-cv/Dockerfile
           push: false
+          load: true
           tags: mini-cv-frontend:ci
 
       - name: Build API image
@@ -163,5 +165,28 @@ jobs:
           context: ./nextjs-cv/api
           file: ./nextjs-cv/api/Dockerfile
           push: false
+          load: true
           tags: mini-cv-api:ci
+
+      - name: Scan frontend image with Trivy
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            aquasec/trivy:0.58.2 \
+            image \
+            --severity HIGH,CRITICAL \
+            --ignore-unfixed \
+            --exit-code 1 \
+            mini-cv-frontend:ci
+
+      - name: Scan API image with Trivy
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            aquasec/trivy:0.58.2 \
+            image \
+            --severity HIGH,CRITICAL \
+            --ignore-unfixed \
+            --exit-code 1 \
+            mini-cv-api:ci
 
