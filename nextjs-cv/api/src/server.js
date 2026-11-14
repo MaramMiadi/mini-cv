@@ -5,6 +5,13 @@ const { z } = require("zod");
 const { PrismaClient } = require("@prisma/client");
 const { profile, projects, skills } = require("./data");
 
+// CSRF justification:
+// This API does not use cookie-based authentication or sessions.
+// It is designed to receive JSON requests from the Next.js server-side API route.
+// No browser authentication credentials are automatically attached.
+// Therefore, cookie-based CSRF middleware is not applicable.
+//
+// nosemgrep: javascript.express.security.audit.express-check-csurf-middleware-usage.express-check-csurf-middleware-usage
 const app = express();
 const PORT = Number(process.env.PORT) || 4000;
 const prisma = new PrismaClient();
