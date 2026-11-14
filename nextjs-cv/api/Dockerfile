@@ -1,4 +1,6 @@
-FROM node:20-alpine
+FROM node:22-alpine
+
+RUN apk upgrade --no-cache
 
 WORKDIR /app
 
@@ -13,6 +15,11 @@ RUN npm ci --omit=dev \
 COPY prisma ./prisma
 
 RUN npx prisma generate
+
+# Remove npm and npx from the production image
+RUN rm -rf /usr/local/lib/node_modules/npm \
+    /usr/local/bin/npm \
+    /usr/local/bin/npx
 
 COPY src ./src
 

@@ -28,5 +28,12 @@
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^5.1.0"
+  },
+  "overrides": {
+    "brace-expansion": "^2.1.6",
+    "ip-address": "^10.3.1",
+    "pacote": "^21.5.1",
+    "picomatch": "^4.0.4",
+    "sigstore": "^4.1.1"
   }
 }

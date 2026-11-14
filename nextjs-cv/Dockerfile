@@ -1,12 +1,14 @@
-FROM node:20-alpine AS base
+FROM node:22-alpine AS base
 
 WORKDIR /app
+
+# Add glibc compatibility for Next.js native SWC bindings
+RUN apk add --no-cache libc6-compat
 
 # Install dependencies
 FROM base AS deps
 
 COPY package.json package-lock.json ./
-
 RUN npm ci
 
 # Build the Next.js application
@@ -22,9 +24,16 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
 # Production image
-FROM node:20-alpine AS runner
+FROM node:22-alpine AS runner
 
 WORKDIR /app
+
+# Update Alpine packages to receive security fixes
+RUN apk upgrade --no-cache
+# Remove npm and npx from the production image
+RUN rm -rf /usr/local/lib/node_modules/npm \
+    /usr/local/bin/npm \
+    /usr/local/bin/npx
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
@@ -43,3 +52,4 @@ USER nextjs
 EXPOSE 3000
 
 CMD ["node", "server.js"]
+
