@@ -1,0 +1,20 @@
+version: 2
+
+updates:
+  # Frontend dependencies
+  - package-ecosystem: "npm"
+    directory: "/nextjs-cv"
+    schedule:
+      interval: "weekly"
+
+  # API dependencies
+  - package-ecosystem: "npm"
+    directory: "/nextjs-cv/api"
+    schedule:
+      interval: "weekly"
+
+  # GitHub Actions dependencies
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
