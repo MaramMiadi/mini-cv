@@ -6,15 +6,21 @@ updates:
     directory: "/nextjs-cv"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7
 
   # API dependencies
   - package-ecosystem: "npm"
     directory: "/nextjs-cv/api"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7
 
   # GitHub Actions dependencies
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7
